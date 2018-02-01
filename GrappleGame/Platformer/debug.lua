@@ -1,7 +1,10 @@
 --to contain all debug actions in on table
 local debug = {}
---library setup--
-hudebug = require("hudebug.hudebug")
+
+if not hudebug then --make sure that hudebug is made
+  hudebug = require("Libraries.hudebug.hudebug")
+end
+
 hudebug.toggle()
 
 --my own variable for tracking info
@@ -14,7 +17,6 @@ function debug.setupGeneralPage()
   debug.setupNewPage("General", {
     {"page-count", function() return "Debug Pages: "..hudebug.pageCount end},
     {"fps", function() return "FPS: "..love.timer.getFPS() end},
-    {"objects", function() return "Object amount: "..#Object.all end}
   })
 end
 
