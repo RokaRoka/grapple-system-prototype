@@ -49,8 +49,8 @@ Object = Class
 function Object:update(dt)
   if self.physicsHandle then
     local x, y = self.physicsHandle.body:getPosition()
-    self.pos.x = x
-    self.pos.y = y
+    self.pos.x = math.floor(x)
+    self.pos.y = math.floor(y)
   end
 end
 

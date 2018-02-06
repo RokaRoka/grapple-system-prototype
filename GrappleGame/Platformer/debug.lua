@@ -27,6 +27,16 @@ function debug.setupNewPage(pageName, info)
   return hudebug.pageCount
 end
 
+--Add info example:
+--[[
+  debug.addInfo(self.debugPage,
+    {"physics-position",
+    function()
+      local x, y = self.physicsHandle.body:getPosition()
+      return "Physics Position: ("..math.floor(x)..", "..math.floor(y)..")"
+    end}
+  )
+]]
 function debug.addInfo(pageNum, info)
   table.insert(debug.info[pageNum], info)
 end
