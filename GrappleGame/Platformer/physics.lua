@@ -3,12 +3,14 @@ DEBUG_COLOR_PHYSICS = {80, 150, 200}
 
 PhysicsHandle = Class
 {
-  init = function(self, parent, world, shape, bodyType, wr, h, offset)
-    if offset then
-      self.body = love.physics.newBody(world, parent.pos.x + offset.x, parent.pos.y + offset.y, bodyType)
+  init = function(self, parent, world, shape, bodyType, wr, h, anchorMode)
+    if anchorMode then
+      self.offset = Vector(self:determineOffset(wr, h, anchorMode))
     else
-      self.body = love.physics.newBody(world, parent.pos.x, parent.pos.y, bodyType)
+      self.offset = Vector(0, 0)
     end
+
+    self.body = love.physics.newBody(world, parent.pos.x + self.offset.x, parent.pos.y + self.offset.y, bodyType)
 
     if shape == "rectangle" then
       self.shape = love.physics.newRectangleShape(wr, h)
@@ -19,17 +21,11 @@ PhysicsHandle = Class
       self.radius = wr
     elseif shape == "edge" then
       local x1, y1, x2, y2
-      if offset then
-        x1 = parent.pos.x + offset.x
-        y1 = parent.pos.y + offset.y
-        x2 = parent.pos.x + wr + offset.x
-        y2 = parent.pos.y + h + offset.y
-      else
-        x1 = parent.pos.x
-        y1 = parent.pos.y
-        x2 = parent.pos.x + wr
-        y2 = parent.pos.y + h
-      end
+
+      x1 = parent.pos.x + self.offset.x
+      y1 = parent.pos.y + self.offset.y
+      x2 = parent.pos.x + wr + self.offset.x
+      y2 = parent.pos.y + h + self.offset.y
 
       self.shape = love.physics.newEdgeShape(x1, y1, x2, y2)
     end
@@ -39,29 +35,49 @@ PhysicsHandle = Class
   end
 }
 
-function PhysicsHandle:draw() --for debug drawing to see where phuysics are
-  local shapeType = self.shape:getType()
-
-  love.graphics.setColor(DEBUG_COLOR_PHYSICS) --set color for drawing phys shapes
-  love.graphics.circle("fill", 0, 64, 8)
-
-  if shapeType == "polygon" then
-    local x, y =  self.body:getPosition()
-    love.graphics.rectangle('line', x, y, self.width, self.height)
-  elseif shapeType == "circle" then
-    local x, y =  self.body:getPosition()
-    love.graphics.circle('line', x, y, self.radius)
-  elseif shapeType == "edge" then
-    love.graphics.line(self.shape:getPoints())
+function PhysicsHandle:determineOffset(wr, h, anchorMode)
+  if anchorMode == ANCHOR_TOP then
+    return wr/-2, 0
+  elseif anchorMode == ANCHOR_CENTER then
+    return wr/-2, h/-2
+  elseif anchorMode == ANCHOR_BOTTOM then
+    return wr/-2, h * -1
+  else
+    return 0, 0
   end
+end
 
-  love.graphics.setColor(255, 255, 255) -- set back to normal white
+function PhysicsHandle:update(dt)
+  --add extra gravity to yMove, if present
 
+  --move velocity X based on xMove
+  --move velocity Y based on yMove
+end
+
+function PhysicsHandle:draw() --for debug drawing to see where physics are
+  if debug then
+    local shapeType = self.shape:getType()
+
+    love.graphics.setColor(DEBUG_COLOR_PHYSICS) --set color for drawing phys shapes
+    love.graphics.circle("fill", 0, 64, 8)
+
+    if shapeType == "polygon" then
+      local x, y =  self.body:getPosition()
+      love.graphics.rectangle('line', x + self.offset.x, y+ self.offset.y, self.width, self.height)
+    elseif shapeType == "circle" then
+      local x, y =  self.body:getPosition()
+      love.graphics.circle('line', x + self.offset.x, y + self.offset.y, self.radius)
+    elseif shapeType == "edge" then
+      love.graphics.line(self.shape:getPoints()) -- find a way to apply offset here
+    end
+
+    love.graphics.setColor(255, 255, 255) -- set back to normal white
+  end
 end
 
 function PhysicsHandle:clear()
   self.body:destroy()
   self.shape:destroy()
   self.fixture:destroy()
-  self = nil
+  --self = nil
 end

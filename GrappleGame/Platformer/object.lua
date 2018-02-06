@@ -1,4 +1,8 @@
 --Object constants
+ANCHOR_TOP = 0
+ANCHOR_CENTER = 1
+ANCHOR_BOTTOM = 2
+
 DEBUG_COLOR_OBJECT = {150, 50, 150}
 
 --load object dependancy
@@ -27,20 +31,32 @@ Object = Class
         })
     end
   end,
-  all = {}
+  all = {},
+
+  updateAll = function(dt)
+    for i,v in ipairs(Object.all) do --update all objects
+      v:update(dt) --update object
+    end
+  end,
+
+  drawAll = function(dt)
+    for i,v in ipairs(Object.all) do --update all objects
+      v:draw() --update object
+    end
+  end
 }
 
 function Object:update(dt)
-  --if there is a physics body, update pos to physics body position.
+  if self.physicsHandle then
+    local x, y = self.physicsHandle.body:getPosition()
+    self.pos.x = x
+    self.pos.y = y
+  end
 end
 
 function Object:draw()
-  if self.physicsHandle then
-    --self.pos = Vector(self.physicsHandle.body:getPosition())
-  end
-
   if self.imageHandle then
-    self.imageHandle:draw(self.pos)
+    self.imageHandle:draw(self.pos, self.angle or 0, self.imageHandle.imageScale or 1)
   end
 
   if self.physicsHandle then
@@ -50,9 +66,9 @@ function Object:draw()
   --draw object center
   if debug then
     love.graphics.setColor(DEBUG_COLOR_OBJECT)
-    love.graphics.circle("fill", self.pos.x, self.pos.y, 8)
+    love.graphics.circle("fill", self.pos.x, self.pos.y, 4)
+    love.graphics.setColor(255, 255, 255)
   end
-  love.graphics.setColor(255, 255, 255)
 end
 
 function Object:clear()
@@ -73,18 +89,19 @@ end
 -- Physics functions --
 --use DRAW_ACHOR for offsetType
 function Object:initPhysics(world, shape, bodyType, wr, h, offsetType)
-  if offsetType == DRAW_ANCHOR_TOP then
-    self.physicsHandle = PhysicsHandle(self, world, shape, bodyType, wr, h, Vector(wr/-2, 0))
-  elseif offsetType == DRAW_ANCHOR_CENTER then
-    self.physicsHandle = PhysicsHandle(self, world, shape, bodyType, wr, h, Vector(wr/-2, h/-2))
-  elseif offsetType == DRAW_ANCHOR_BOTTOM then
-    self.physicsHandle = PhysicsHandle(self, world, shape, bodyType, wr, h, Vector(wr/-2, h * -1))
-  else --default
-    self.physicsHandle = PhysicsHandle(self, world, shape, bodyType, wr, h)
-  end
+  self.physicsHandle = PhysicsHandle(self, world, shape, bodyType, wr, h, offsetType)
 
-  Signal.register('begin-contact-'..self.name, function(fixtureA, fixtureB, contact) self:beginContact(fixtureA, fixtureB, contact) end)
-  Signal.register('end-contact-'..self.name, function(fixtureA, fixtureB, contact) self:endContact(fixtureA, fixtureB, contact) end)
+  Signal.register('begin-contact-'..self.name,
+    function(fixtureA, fixtureB, contact)
+      self:beginContact(fixtureA, fixtureB, contact)
+    end
+  )
+
+  Signal.register('end-contact-'..self.name,
+    function(fixtureA, fixtureB, contact)
+      self:endContact(fixtureA, fixtureB, contact)
+    end
+  )
 
   if debug then
     debug.addInfo(self.debugPage,

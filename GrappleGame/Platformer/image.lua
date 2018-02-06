@@ -1,8 +1,3 @@
---Constants
-DRAW_ANCHOR_TOP = 0
-DRAW_ANCHOR_CENTER = 1
-DRAW_ANCHOR_BOTTOM = 2
-
 DEBUG_COLOR_IMAGE = {50, 150, 125}
 
 ImageHandle = Class
@@ -10,30 +5,38 @@ ImageHandle = Class
   init = function(self, path, filename, drawAnchorMode)
     self.image = love.graphics.newImage(path..filename)
     self.drawAnchorMode = drawAnchorMode
+    self.width, self.height = self.image:getDimensions()
 
     --set offset based on anchor mode and image dimensions
-    self.offset = Vector(self:determineOffset(self.image:getDimensions()))
+    self.offset = Vector(self:determineOffset())
   end
 }
 
-function ImageHandle:determineOffset(w, h)
-  if self.drawAnchorMode == DRAW_ANCHOR_TOP then
-    return w/-2, 0
-  elseif self.drawAnchorMode == DRAW_ANCHOR_CENTER then
-    return w/-2, h/-2
-  elseif self.drawAnchorMode == DRAW_ANCHOR_BOTTOM then
-    return w/-2, h * -1
+function ImageHandle:determineOffset()
+  if self.drawAnchorMode == ANCHOR_TOP then
+    return (self.width * (self.imageScale or 0))/-2, 0
+  elseif self.drawAnchorMode == ANCHOR_CENTER then
+    return (self.width * (self.imageScale or 0))/-2, (self.height * (self.imageScale or 0)) /-2
+  elseif self.drawAnchorMode == ANCHOR_BOTTOM then
+    return (self.width * (self.imageScale or 0))/-2, (self.height * (self.imageScale or 0)) * -1
   else
     return 0, 0
   end
 end
 
-function ImageHandle:draw(position, rotation)
-  love.graphics.setColor(DEBUG_COLOR_IMAGE) --fill debug circle for debug
-  if debug then love.graphics.circle("fill", position.x, position.y, 8) end
+function ImageHandle:setDrawScale(newScale)
+  self.imageScale = newScale
+  self.offset = Vector(self:determineOffset())
+end
 
-  love.graphics.setColor(255, 255, 255)
-  love.graphics.draw(self.image, position.x + self.offset.x, position.y + self.offset.y, rotation or 0)
+function ImageHandle:draw(position, angle, scale)
+  if debug then
+    love.graphics.setColor(DEBUG_COLOR_IMAGE) --fill debug circle for debug
+    love.graphics.circle("fill", position.x, position.y, 8)
+    love.graphics.setColor(255, 255, 255)
+  end
+
+  love.graphics.draw(self.image, position.x + self.offset.x, position.y + self.offset.y, angle, scale, scale)
 end
 
 function ImageHandle:clear()
@@ -96,9 +99,11 @@ function TileHandle:addSprites(tileWidthSpacing, tileHeightSpacing)
 end
 
 function TileHandle:draw(position)
-  love.graphics.setColor(DEBUG_COLOR_IMAGE) --fill debug circle for debug
-  if debug then love.graphics.circle("fill", position.x, position.y, 8) end
+  if debug then
+    love.graphics.setColor(DEBUG_COLOR_IMAGE) --fill debug circle for debug
+    love.graphics.circle("fill", position.x, position.y, 8)
+    love.graphics.setColor(255, 255, 255)
+  end
 
-  love.graphics.setColor(255, 255, 255)
   love.graphics.draw(self.spriteBatch, position.x + self.offset.x, position.y + self.offset.y, rotation or 0)
 end

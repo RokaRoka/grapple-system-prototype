@@ -18,10 +18,15 @@ require("Platformer.FPScap")
 --DebugState Gamestate
 --note: this state is for testing anything one specific thing in the game
 -- never more than one mechanic at the time!
-require("Platformer.debug")
+debug = require("Platformer.debug")
 
 function love.load(args)
+  --debug room
+  local debugRoom = require("Game/DebugRoom")
 
+
+  Gamestate.registerEvents()
+  Gamestate.switch(debugRoom)
 end
 
 function love.update(dt)
@@ -33,7 +38,9 @@ function love.draw()
 end
 
 function love.keypressed(key, scancode, isrepeat)
-  --body
+  if key == "escape" then
+    love.event.quit()
+  end
 end
 
 function love.keyreleased(key)

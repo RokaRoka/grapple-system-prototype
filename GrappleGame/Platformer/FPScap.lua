@@ -1,5 +1,5 @@
 --Set frame cap
-min_dt = 1/30
+min_dt = 1/60
 next_time = love.timer.getTime()
 
 --Function for keeping an

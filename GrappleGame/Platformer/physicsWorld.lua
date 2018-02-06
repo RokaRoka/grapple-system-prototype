@@ -1,5 +1,8 @@
+--set general physics properties
+love.physics.setMeter(32)
+
 --physics world
-local world = love.physics.newWorld(0, 9.81)
+local world = love.physics.newWorld(0, 10)
 
 --physics world settings
 
