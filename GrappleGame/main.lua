@@ -6,6 +6,8 @@ Class = require("Libraries.hump.class")
 Gamestate = require("Libraries.hump.gamestate")
 Signal = require("Libraries.hump.signal")
 
+lume = require("Libraries.lume")
+
 --HUDebug library
 hudebug = require("Libraries.hudebug.hudebug")
 
