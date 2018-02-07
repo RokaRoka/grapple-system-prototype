@@ -111,6 +111,13 @@ function Object:initPhysics(world, shape, bodyType, wr, h, offsetType)
         return "Physics Position: ("..math.floor(x)..", "..math.floor(y)..")"
       end}
     )
+    debug.addInfo(self.debugPage,
+      {"physics-velocity",
+      function()
+        local x, y = self.physicsHandle.body:getLinearVelocity()
+        return "Physics Velocity: ("..math.floor(x)..", "..math.floor(y)..")"
+      end}
+    )
   end
 end
 

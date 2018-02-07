@@ -38,7 +38,7 @@ function debugRoom:update(dt) -- called in love.update
   --update all objects
   Object.updateAll(dt)
 
-  world:update(dt)
+  world:update(dt*2)
 
   if debug then debug.updateCurrentPage() end
 end
@@ -67,6 +67,14 @@ function debugRoom:keypressed(key, scancode, isrepeat)
   if key == 'tab' and debug then
     debug.togglePage()
   end
+
+  --Player key presses
+  player:keypressed(key, isrepeat)
+end
+
+function debugRoom:keyreleased(key)
+  --Player key releases
+  player:keyreleased(key)
 end
 
 return debugRoom
