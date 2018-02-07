@@ -23,12 +23,19 @@ Object = Class
     table.insert(Object.all, self)
     self.index = #Object.all + 1
 
+    --random debug text filler
+    self.debugLog = "Empty debug log for "..self.name
+
     --if there is debug, give it a page
     if debug then
       self.debugPage = debug.setupNewPage(self.name.." Debug",
         {
           {"position", function() return "Position: "..tostring(self.pos) end}
         })
+      debug.addInfo(self.debugPage,
+        {"debug-log",
+        function() return self.debugLog end}
+      )
     end
   end,
   all = {},

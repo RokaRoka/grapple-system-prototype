@@ -70,7 +70,7 @@ function PhysicsHandle:draw() --for debug drawing to see where physics are
 end
 
 function PhysicsHandle:setSensor()
-    self.body:setSensor(true)
+    self.fixture:setSensor(true)
 end
 
 function PhysicsHandle:clear()

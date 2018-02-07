@@ -32,6 +32,7 @@ function debugRoom:enter(previous, args) -- called when entering this state from
   ground1:initPhysics(world, DEBUGROOM_GROUND1_WIDTH, DEBUGROOM_GROUND1_HEIGHT)
 
   star1 = GrapplePoint(DEBUGROOM_STAR1_POSITION)
+  star1:initPhysics(world)
 
   if debug then
     debug.setupGeneralPage()
@@ -55,6 +56,8 @@ function debugRoom:draw() -- called in love.draw
 
   --draw all objects
   Object.drawAll()
+
+  if touching then love.graphics.print(text, 64, 64) end
 
   if debug then debug.draw() end
 
