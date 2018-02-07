@@ -2,7 +2,9 @@
 function Player:grapplingUpdate(dt)
   self:grappleMove()
   local currentHookPosition = Vector(
-    lume.lerp(self.pos.x, self.grapplTarget.pos.x, self.grappleCount/5))
+    lume.lerp(self.pos.x, self.grappleTarget.pos.x,self.grappleCount/5),
+    lume.lerp(self.pos.y, self.grappleTarget.pos.y,self.grappleCount/5)
+  )
   self:updateGrapplePosition(currentHookPosition)
   if self:checkGrappleComplete() then
     self.grappleFired = false
@@ -11,10 +13,12 @@ function Player:grapplingUpdate(dt)
 end
 
 function Player:grappleDraw()
-  local oldColor = love.graphics.getColor()
+  local oldColor = {love.graphics.getColor()}
   love.graphics.setColor(self.hookColor)
-  love.graphics.line(self.pos.unpack(), self.hookPosition:unpack())
-  love.graphics.setColor(oldColor)
+  local x1, y1 = self.pos:unpack()
+  local x2, y2 = self.hookPosition:unpack()
+  love.graphics.line(x1, y1, x2, y2)
+  love.graphics.setColor( oldColor )
 end
 
 --starts the grappling update

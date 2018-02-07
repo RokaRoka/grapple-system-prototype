@@ -51,12 +51,12 @@ Player = Class{__includes = Object,
   gravY = 0.5 * love.physics.getMeter(),
 
   --Movement data
-  moveAccel = 0.4 * love.physics.getMeter(),
-  moveDecel = 0.65 * love.physics.getMeter(),
+  moveAccel = 0.3 * love.physics.getMeter(),
+  moveDecel = 0.55 * love.physics.getMeter(),
   moveTopSpeed = 12 * love.physics.getMeter(),
 
   --Air data
-  airAccel = 1 * love.physics.getMeter(),
+  airAccel = 0.5 * love.physics.getMeter(),
 
   --Jump data
   jumpPower = -5 * love.physics.getMeter(),
@@ -105,9 +105,35 @@ end
 function Player:draw()
   if self.grappleFired or self.swinging then
     --draw grapple
-
+    self:grappleDraw()
   end
   Object.draw(self)
+end
+
+function Player:beginContact(fixtureA, fixtureB, contact)
+
+  local otherB = fixtureB:getUserData()
+  if otherB.name == "Ground" then
+    self.debugLog = "Player grounded!"
+    self.grounded = true
+  end
+  if otherB.name == "GrapplePoint" then
+    self.debugLog = "GrapplePoint detected!"
+    self.grappleTarget = otherB
+  end
+end
+
+function Player:endContact(fixtureA, fixtureB, contact)
+
+  local otherB = fixtureB:getUserData()
+  if otherB.name == "Ground" then
+    self.debugLog = "Player not grounded!"
+    self.grounded = false
+  end
+  if otherB.name == "GrapplePoint" then
+    self.debugLog = "GrapplePoint lost!"
+    self.grappleTarget = nil
+  end
 end
 
 function Player:keypressed(key, isrepeat)
@@ -119,7 +145,14 @@ function Player:keypressed(key, isrepeat)
     self.inputDirectionHeld = self.inputDirectionHeld + Player.VECTOR_RIGHT
   end
   if key == "space" then
-    self.jumping = true
+    if self.grounded then
+      self.jumping = true
+    elseif self.swinging then
+      --swing jump?
+    elseif self.grappleTarget then
+      --attempt grapple!
+      self:fireGrappleHook()
+    end
   end
 end
 
@@ -133,7 +166,9 @@ function Player:keyreleased(key)
   end
 
   if key == "space" then
-    self.jumping = false
+    if self.jumping then
+      self.jumping = false
+    end
   end
 end
 

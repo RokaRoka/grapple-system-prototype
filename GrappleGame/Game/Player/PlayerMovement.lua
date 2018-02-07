@@ -13,6 +13,12 @@ function Player:movement(dt)
   end
 
   --y velocity math
+  --if not grounded, apply gravity
+  if not self.grounded then --if in the air
+    --apply additional grav to velocity y
+    self:applyGravity()
+  end
+
   if self.jumping then
     self:applyJump()
     self.airTime = self.airTime + dt
@@ -20,11 +26,6 @@ function Player:movement(dt)
       self.airTime = 0
       self.jumping = false
     end
-  end
-  --if not grounded, apply gravity
-  if not self.grounded then --if in the air
-    --apply additional grav to velocity y
-    self:applyGravity()
   end
   --update movement
   self:updateVelocity()
