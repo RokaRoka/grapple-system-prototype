@@ -18,7 +18,7 @@ function debugRoom:enter(previous, args) -- called when entering this state from
   DEBUGROOM_GROUND1_HEIGHT = 64
   DEBUGROOM_GROUND1_POSITION = Vector(256, love.graphics.getHeight() - 32)
 
-  DEBUGROOM_STAR_Y = Vector(0, love.graphics.getHeight() - (DEBUGROOM_GROUND1_HEIGHT * 2))
+  DEBUGROOM_STAR_Y = Vector(0, love.graphics.getHeight() - (DEBUGROOM_GROUND1_HEIGHT * 4))
   DEBUGROOM_STAR1_POSITION = Vector(256, 0) + DEBUGROOM_STAR_Y
 
   --create physics world

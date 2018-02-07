@@ -44,20 +44,20 @@ Player = Class{__includes = Object,
     self.jumping = false
     self.airTime = 0
   end,
-  --Physics Data
-  gravY = 0.85,
+  --Physics Data --EVERYTHING in meters
+  gravY = 0.45 * love.physics.getMeter(),
 
   --Movement data
-  moveAccel = 1.15,
-  moveDecel = 1.35,
-  moveTopSpeed = 50,
+  moveAccel = 0.4 * love.physics.getMeter(),
+  moveDecel = 0.65 * love.physics.getMeter(),
+  moveTopSpeed = 12 * love.physics.getMeter(),
 
   --Air data
-  airAccel = 1.5,
+  airAccel = 1 * love.physics.getMeter(),
 
   --Jump data
-  jumpPower = -50,
-  maxJumpTime = 0.75,
+  jumpPower = -6 * love.physics.getMeter(),
+  maxJumpTime = 0.85, --this is in seconds
 
   --Vector constants
   VECTOR_RIGHT = Vector(1.0, 0),
