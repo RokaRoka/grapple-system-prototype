@@ -48,7 +48,7 @@ function PhysicsHandle:determineOffset(wr, h, anchorMode)
 end
 
 function PhysicsHandle:draw() --for debug drawing to see where physics are
-  if debug then
+  if debug.myDebug then
     local shapeType = self.shape:getType()
 
     love.graphics.setColor(DEBUG_COLOR_PHYSICS) --set color for drawing phys shapes

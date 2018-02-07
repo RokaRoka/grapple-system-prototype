@@ -26,7 +26,7 @@ Player = Class{__includes = Object,
 
     --Player member vars--
     self.inputDirectionHeld = Vector()
-    if debug then
+    if debug.myDebug then
       debug.addInfo(self.debugPage,
         {"player-input",
           function()

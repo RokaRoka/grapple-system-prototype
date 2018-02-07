@@ -1,6 +1,8 @@
 --to contain all debug actions in on table
 local debug = {}
 
+debug.myDebug = true
+
 if not hudebug then --make sure that hudebug is made
   hudebug = require("Libraries.hudebug.hudebug")
 end

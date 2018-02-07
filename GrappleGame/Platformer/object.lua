@@ -27,7 +27,7 @@ Object = Class
     self.debugLog = "Empty debug log for "..self.name
 
     --if there is debug, give it a page
-    if debug then
+    if debug.myDebug then
       self.debugPage = debug.setupNewPage(self.name.." Debug",
         {
           {"position", function() return "Position: "..tostring(self.pos) end}
@@ -71,7 +71,7 @@ function Object:draw()
   end
 
   --draw object center
-  if debug then
+  if debug.myDebug then
     love.graphics.setColor(DEBUG_COLOR_OBJECT)
     love.graphics.circle("fill", self.pos.x, self.pos.y, 4)
     love.graphics.setColor(255, 255, 255)
@@ -110,7 +110,7 @@ function Object:initPhysics(world, shape, bodyType, wr, h, offsetType)
     end
   )
 
-  if debug then
+  if debug.myDebug then
     debug.addInfo(self.debugPage,
       {"physics-position",
       function()
@@ -143,7 +143,7 @@ function Object:initGraphics(path, filename, drawAnchorMode, flag, tileData, til
     if flag == "-sb" then
       --make a spritebatch
       self.imageHandle = TileHandle(path, filename, tileData, tileWidthSpacing, tileHeightSpacing)
-      if debug then
+      if debug.myDebug then
         debug.addInfo( self.debugPage,
           {"tile-amount",
           function() return "Tile Amount: "..self.imageHandle.spriteBatch:getCount() end
@@ -157,7 +157,7 @@ function Object:initGraphics(path, filename, drawAnchorMode, flag, tileData, til
     self.imageHandle = ImageHandle(path, filename, drawAnchorMode)
   end
 
-  if debug then
+  if debug.myDebug then
     debug.addInfo(self.debugPage,
       {"draw-offset", function() return "Image Offset"..tostring(self.imageHandle.offset) end}
     )

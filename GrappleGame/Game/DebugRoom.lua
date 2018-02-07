@@ -1,6 +1,6 @@
 --A gamestate for testing various aspects of the game
 local debugRoom = {}
-DEBUG_COLOR_BG = {30, 25, 32}
+DEBUG_COLOR_BG = {60, 58, 55}
 
 function debugRoom:init() -- called once before entering the state for the first time
   -- require game files --
@@ -34,7 +34,7 @@ function debugRoom:enter(previous, args) -- called when entering this state from
   star1 = GrapplePoint(DEBUGROOM_STAR1_POSITION)
   star1:initPhysics(world)
 
-  if debug then
+  if debug.myDebug then
     debug.setupGeneralPage()
   end
 end
@@ -47,7 +47,7 @@ function debugRoom:update(dt) -- called in love.update
 
   world:update(dt)
 
-  if debug then debug.updateCurrentPage() end
+  if debug.myDebug then debug.updateCurrentPage() end
 end
 
 function debugRoom:draw() -- called in love.draw
@@ -59,7 +59,9 @@ function debugRoom:draw() -- called in love.draw
 
   if touching then love.graphics.print(text, 64, 64) end
 
-  if debug then debug.draw() end
+  if debug.myDebug then debug.draw() end
+
+  love.graphics.setBackgroundColor(DEBUG_COLOR_BG) -- set temp BG color
 
   setFPSdraw() --set FPS draw as last
 end
