@@ -13,11 +13,7 @@ Object = Class
 {
   init = function(self, position, name)
     --init stuff here
-    if Vector.isvector(position) then
-      self.pos = position
-    else
-      self.pos = Vector(position.x, position.y)
-    end
+    self.pos = Vector(position.x, position.y)
     self.name = name
 
     table.insert(Object.all, self)
