@@ -2,7 +2,7 @@
 love.physics.setMeter(32)
 
 --physics world
-local world = love.physics.newWorld(0, 10)
+local world = love.physics.newWorld(0, 0)
 
 --physics world settings
 

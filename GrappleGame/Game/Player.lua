@@ -3,8 +3,6 @@ local playerData = {}
 --Player mechanic data--
 playerData.inputAngle = 0
 
---air movement data
-playerData.airAccel = 0.35
 --swinging data
 playerData.swingSpeed = Vector(0, 0)
 playerData.swingTopSpeed = 10
@@ -42,14 +40,24 @@ Player = Class{__includes = Object,
 
     --player physics data--
     self.moveVelocity = Vector(0, 0)
+    self.grounded = false
+    self.jumping = false
+    self.airTime = 0
   end,
   --Physics Data
-  extraGravY = 0.25,
+  gravY = 0.85,
 
   --Movement data
-  moveAccel = 0.75,
-  moveDecel = 0.85,
-  moveTopSpeed = 25,
+  moveAccel = 1.15,
+  moveDecel = 1.35,
+  moveTopSpeed = 50,
+
+  --Air data
+  airAccel = 1.5,
+
+  --Jump data
+  jumpPower = -50,
+  maxJumpTime = 0.75,
 
   --Vector constants
   VECTOR_RIGHT = Vector(1.0, 0),
@@ -82,6 +90,9 @@ function Player:keypressed(key, isrepeat)
   elseif key == "d" then
     self.inputDirectionHeld = self.inputDirectionHeld + Player.VECTOR_RIGHT
   end
+  if key == "space" then
+    self.jumping = true
+  end
 end
 
 function Player:keyreleased(key)
@@ -92,6 +103,10 @@ function Player:keyreleased(key)
   elseif key == "d" then
     self.inputDirectionHeld = self.inputDirectionHeld - self.VECTOR_RIGHT
   end
+
+  if key == "space" then
+    self.jumping = false
+  end
 end
 
 function Player:movement(dt)
@@ -99,19 +114,28 @@ function Player:movement(dt)
   local _
   _, self.moveVelocity.y = self.physicsHandle.body:getLinearVelocity()
 
-  --is the player pressing any x movement
+  --x velocity math
+  --if holding a direction, accelerate
   if self.inputDirectionHeld.x > 0 or self.inputDirectionHeld.x < 0 then
-    --accelerate, since input is being held
     self:accelerate()
   elseif self.moveVelocity.x < 0 or self.moveVelocity.x > 0 then
     --decelerate since input is not held and the player is moving
     self:decelerate()
-
   end
 
-  --y velocity stuff
-  if self.moveVelocity.y > 0 or self.moveVelocity.y < 0 then
+  --y velocity math
+  if self.jumping then
+    self:applyJump()
+    self.airTime = self.airTime + dt
+    if self.airTime > self.maxJumpTime then
+      self.airTime = 0
+      self.jumping = false
+    end
+  end
+  --if not grounded, apply gravity
+  if not self.grounded then --if in the air
     --apply additional grav to velocity y
+    self:applyGravity()
   end
   --update movement
   self:updateVelocity()
@@ -141,15 +165,15 @@ function Player:decelerate()
   end
 end
 
-function Player:addGravity()
+function Player:applyGravity()
   --if not colliding with ground <- add This
-  self.moveVelocity.y = self.moveVelocity.y + self.extraGravY
+  self.moveVelocity.y = self.moveVelocity.y + self.gravY
 end
 
 function Player:updateVelocity()
   self.physicsHandle.body:setLinearVelocity(self.moveVelocity:unpack())
 end
 
-function Player:jump(impulseY)
-
+function Player:applyJump()
+  self.moveVelocity.y = self.jumpPower
 end

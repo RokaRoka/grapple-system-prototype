@@ -47,13 +47,6 @@ function PhysicsHandle:determineOffset(wr, h, anchorMode)
   end
 end
 
-function PhysicsHandle:update(dt)
-  --add extra gravity to yMove, if present
-
-  --move velocity X based on xMove
-  --move velocity Y based on yMove
-end
-
 function PhysicsHandle:draw() --for debug drawing to see where physics are
   if debug then
     local shapeType = self.shape:getType()
@@ -64,6 +57,7 @@ function PhysicsHandle:draw() --for debug drawing to see where physics are
     if shapeType == "polygon" then
       local x, y =  self.body:getPosition()
       love.graphics.rectangle('line', x + self.offset.x, y+ self.offset.y, self.width, self.height)
+
     elseif shapeType == "circle" then
       local x, y =  self.body:getPosition()
       love.graphics.circle('line', x + self.offset.x, y + self.offset.y, self.radius)
@@ -73,6 +67,10 @@ function PhysicsHandle:draw() --for debug drawing to see where physics are
 
     love.graphics.setColor(255, 255, 255) -- set back to normal white
   end
+end
+
+function PhysicsHandle:setSensor()
+    self.body:setSensor(true)
 end
 
 function PhysicsHandle:clear()
