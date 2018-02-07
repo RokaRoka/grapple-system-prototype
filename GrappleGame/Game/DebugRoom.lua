@@ -5,7 +5,7 @@ DEBUG_COLOR_BG = {60, 58, 55}
 function debugRoom:init() -- called once before entering the state for the first time
   -- require game files --
   require("Platformer/object")
-  require("Game/Player")
+  require("Game/Player/Player")
   require("Game/Ground")
   require("Game/GrapplePoint")
 end

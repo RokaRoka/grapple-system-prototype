@@ -38,14 +38,17 @@ Player = Class{__includes = Object,
       )
     end
 
-    --player physics data--
+    --player member physics data--
     self.moveVelocity = Vector(0, 0)
     self.grounded = false
     self.jumping = false
     self.airTime = 0
+
+    --player member grapple data--
+    self.grappleTarget = nil
   end,
   --Physics Data --EVERYTHING in meters
-  gravY = 0.45 * love.physics.getMeter(),
+  gravY = 0.5 * love.physics.getMeter(),
 
   --Movement data
   moveAccel = 0.4 * love.physics.getMeter(),
@@ -56,8 +59,21 @@ Player = Class{__includes = Object,
   airAccel = 1 * love.physics.getMeter(),
 
   --Jump data
-  jumpPower = -6 * love.physics.getMeter(),
-  maxJumpTime = 0.85, --this is in seconds
+  jumpPower = -5 * love.physics.getMeter(),
+  maxJumpTime = 0.3, --this is in seconds
+
+  --grappling hook data
+  grappleRange = 96,
+  grappleFired = false,
+  grappleCount = 0,
+  grappleFailed = false,
+
+  --grapple draw data
+  hookColor = {235, 235, 235},
+  hookPosition = Vector(0, 0),
+
+  --swinging data
+  swinging = false,
 
   --Vector constants
   VECTOR_RIGHT = Vector(1.0, 0),
@@ -79,8 +95,19 @@ function Player:update(dt)
   Object.update(self, dt)
   --is the player moving and is physics active
   if self.physicsHandle then
+    if self.grappleFired then
+      self:grapplingUpdate(dt)
+    end
     self:movement(dt)
   end
+end
+
+function Player:draw()
+  if self.grappleFired or self.swinging then
+    --draw grapple
+
+  end
+  Object.draw(self)
 end
 
 function Player:keypressed(key, isrepeat)
@@ -108,7 +135,7 @@ function Player:keyreleased(key)
   if key == "space" then
     self.jumping = false
   end
-
-  require("Game/Player.PlayerMovement")
-  require("Game/Player.PlayerGrapple")
 end
+
+require("Game/Player/PlayerMovement")
+require("Game/Player/PlayerGrapple")
