@@ -20,6 +20,7 @@ function Player:movement(dt)
     self:applyGravity()
     if self.swinging then
       self:ropeTension()
+      self:gravityCleanup()
     end
   elseif self.grounded then
     self.moveVelocity.y = 0

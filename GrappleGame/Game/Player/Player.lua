@@ -88,7 +88,7 @@ Player = Class{__includes = Object,
   hookColor = {235, 235, 235},
 
   --swinging data
-  swingAccel = 0.5,
+  swingAccel = 1.5,
   goingFastSpeed = 10,
   influenceRefill = 10,
 
