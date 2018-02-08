@@ -48,7 +48,13 @@ Object = Class
     for i,v in ipairs(Object.all) do --update all objects
       v:draw() --update object
     end
-  end
+  end,
+
+  clearAll = function(dt)
+    for i,v in ipairs(Object.all) do --kill all objects
+      v:clear() --kill object
+    end
+  end,
 }
 
 function Object:update(dt)

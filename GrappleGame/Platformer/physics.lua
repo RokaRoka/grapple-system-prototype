@@ -76,7 +76,7 @@ end
 
 function PhysicsHandle:clear()
   self.body:destroy()
-  self.shape:destroy()
-  self.fixture:destroy()
+  --self.shape:destroy()
+  --self.fixture:destroy()
   --self = nil
 end

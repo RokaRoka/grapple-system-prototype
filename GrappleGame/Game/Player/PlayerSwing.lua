@@ -1,7 +1,6 @@
 function Player:swingUpdate(dt)
   self:updateMomentum()
   self:checkSwingDirection()
-  self:checkForStandstill()
   self:rotateToRope()
 end
 
@@ -20,8 +19,16 @@ function Player:enterSwingState()
 end
 
 function Player:exitSwingState()
-  self.swing = false
+  self.swinging = false
   self.rope:destroy()
+  self.grappledTo = nil
+end
+
+function Player:swingJump()
+  self:exitSwingState()
+  self.moveVelocity = Vector.fromPolar(self.angle, self.momentum * self.swingJumpPower)
+  self:setAngle(0)
+  --self.moveVelocity = Vector.fromPolar(self.angle, math.pow(self.momentum, self.swingJumpPower))
 end
 
 function Player:setRope()
@@ -36,25 +43,23 @@ end
 
 function Player:checkSwingDirection()
   local sign = lume.sign(self.moveVelocity.x)
-  local sign2 = lume.sign(self.lastVelocityX)
-  if sign ~= sign2 then
+  if swingRight and sign < 0 then
     self.swingRight = not self.swingRight
+    self.influence = self.influenceRefill
+  elseif not swingRight and sign > 0 then
+    self.swingRight = not self.swingRight
+    self.influence = self.influenceRefill
   end
-end
-
-function Player:momentumToVelocity()
-  if self.swingRight then
-    self.moveVelocity = Vector.fromPolar(self.angle, self.momentum)
-  else
-    self.moveVelocity = Vector.fromPolar(self.angle + math.pi * 2, self.momentum * self.airDrag) --apply drag for better feeling
-  end
+  self.debugLog = "Influence "..self.influence
 end
 
 function Player:influenceSwingSpeed()
   if self.influence > 0 then
     --self.momentum = self.momentum + self.swingAccel
     self.moveVelocity.x = self.moveVelocity.x + self.swingAccel * lume.sign(self.inputDirectionHeld.x)
+    self.moveVelocity.y = self.moveVelocity.y + self.swingAccel
     self.influence = self.influence - self.swingAccel
+
     --[[
     if self.influence < 0 then
       self.moveVelocity.x = self.physicsHandle.body:getLinearVelocity() + (self.swingAccel + self.influence) * sign
@@ -74,21 +79,12 @@ function Player:ropeTension()
 
   self.moveVelocity.y = self.moveVelocity.y - tensionY * love.physics.getMeter()
   self.moveVelocity.x = self.moveVelocity.x - tensionX * love.physics.getMeter()
-
-  self.debugLog = "Tensions x and y"..lume.round(tensionX).." "..lume.round(tensionY)
 end
 
 function Player:gravityCleanup()
   local tensionX, tensionY = self.rope:getReactionForce(3/60)
   if math.abs(self.moveVelocity.x) < 8 and lume.round(self.moveVelocity.y * 32) == lume.round(tensionY * 32) then
     --self.moveVelocity.y = 0
-  end
-end
-
-function Player:checkForStandstill()
-  if lume.sign(self.lastVelocityX) ~= lume.sign(self.moveVelocity.x) or
-     self.lastVelocityX == 0 then
-    self.influence = self.influenceRefill
   end
 end
 

@@ -65,11 +65,11 @@ Player = Class{__includes = Object,
 
   end,
   --Physics Data --EVERYTHING in meters
-  gravY = 0.5 * love.physics.getMeter(),
+  gravY = 0.4 * love.physics.getMeter(),
 
   --Movement data
   moveAccel = 0.3 * love.physics.getMeter(),
-  moveDecel = 0.55 * love.physics.getMeter(),
+  moveDecel = 0.6 * love.physics.getMeter(),
   moveTopSpeed = 10 * love.physics.getMeter(),
 
   --Air data
@@ -77,7 +77,7 @@ Player = Class{__includes = Object,
   airDrag = 0.95, --is multiplied to velocity
 
   --Jump data
-  jumpPower = -6.5 * love.physics.getMeter(),
+  jumpPower = -8 * love.physics.getMeter(),
   maxJumpTime = 0.4, --this is in seconds
 
   --grappling hook data
@@ -88,14 +88,15 @@ Player = Class{__includes = Object,
   hookColor = {235, 235, 235},
 
   --swinging data
-  swingAccel = 1.5,
-  goingFastSpeed = 10,
+  swingAccel = 2,
+  goingFastSpeed = 12,
   influenceRefill = 10,
+  swingJumpPower = 3,
 
   --Vector constants
   VECTOR_RIGHT = Vector(1.0, 0),
-  VECTOR_LEFT = Vector(-1.0, 0)
-
+  VECTOR_LEFT = Vector(-1.0, 0),
+  PLAYER_CHECKPOINT = Vector(64, 432)
 }
 
 function Player:initPhysics(world)
@@ -109,6 +110,7 @@ end
 
 -- PLAYER CALLBACKS --
 function Player:update(dt)
+  self:checkDeath()
   Object.update(self, dt)
   --is the player moving and is physics active
   if self.physicsHandle then
@@ -138,7 +140,10 @@ function Player:beginContact(fixtureA, fixtureB, contact)
   local otherB = fixtureB:getUserData()
   if otherB.name == "Ground" then
     self.debugLog = "Player grounded!"
-    self.grounded = true
+    local contactPos = {contact:getPositions()}
+    if contactPos[2] > self.pos.y + 48  and contactPos[4] > self.pos.y + 48 then
+      self.grounded = true
+    end
   end
   if otherB.name == "GrapplePoint" then
     self.debugLog = "GrapplePoint detected!"
@@ -172,6 +177,7 @@ function Player:keypressed(key, isrepeat)
       self.jumping = true
     elseif self.swinging then
       --swing jump?
+      self:swingJump()
     elseif self.grappleTarget then
       --attempt grapple!
       self:fireGrappleHook()
@@ -192,6 +198,16 @@ function Player:keyreleased(key)
     if self.jumping then
       self.jumping = false
     end
+  end
+end
+
+function Player:checkDeath()
+  if self.pos.y > love.graphics.getHeight() * 1.5 then
+    --restartLevel()
+    local x, y = self.PLAYER_CHECKPOINT:unpack()
+    self.physicsHandle.body:setPosition(x, y)
+    self.moveVelocity.x = 0
+    self.moveVelocity.y = 0
   end
 end
 

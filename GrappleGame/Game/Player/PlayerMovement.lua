@@ -37,7 +37,6 @@ function Player:movement(dt)
   end
 
   --update movement
-  self.lastVelocityX = self.moveVelocity.x
   self:updateVelocity()
 end
 
