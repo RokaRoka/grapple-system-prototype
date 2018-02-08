@@ -5,6 +5,7 @@ Vector = require("Libraries.hump.vector")
 Class = require("Libraries.hump.class")
 Gamestate = require("Libraries.hump.gamestate")
 Signal = require("Libraries.hump.signal")
+Camera = require("Libraries.hump.camera")
 
 --lume library
 lume = require("Libraries.lume.lume")

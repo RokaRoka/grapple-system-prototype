@@ -24,9 +24,15 @@ function debugRoom:enter(previous, args) -- called when entering this state from
   --create physics world
   world = require("Platformer/physicsWorld")
 
+  --create camera
+  cam = require("Platformer/followingCamera")
+
   --Vectors are pass by ref, we need to be careful of that
   player = Player(DEBUGROOM_PLAYER_POSITION)
   player:initPhysics(world)
+
+  --set cam to follow player
+  cam.init(player)
 
   ground1 = Ground(DEBUGROOM_GROUND1_POSITION)
   ground1:initPhysics(world, DEBUGROOM_GROUND1_WIDTH, DEBUGROOM_GROUND1_HEIGHT)
@@ -42,10 +48,13 @@ end
 function debugRoom:update(dt) -- called in love.update
   setFPSupdate() -- set FPS update as first
 
+  --update world
+  world:update(dt)
+
   --update all objects
   Object.updateAll(dt)
 
-  world:update(dt)
+  cam:update()
 
   if debug.myDebug then debug.updateCurrentPage() end
 end
@@ -55,7 +64,7 @@ function debugRoom:draw() -- called in love.draw
   love.graphics.setBackgroundColor(DEBUG_COLOR_BG) -- set temp BG color
 
   --draw all objects
-  Object.drawAll()
+  cam.camera:draw(Object.drawAll)
 
   if touching then love.graphics.print(text, 64, 64) end
 
