@@ -70,7 +70,7 @@ function Player:ropeTension()
   --local tension =  self.gravY * math.cos(angle) --the rest of the "gravY" is gravTangent!
   --local gravTangent = self.gravY - tension
   --self.moveVelocity.y = self.moveVelocity.y - tension
-  local tensionX, tensionY = self.rope:getReactionForce(3/60)
+  local tensionX, tensionY = self.rope:getReactionForce(1/60)
 
   self.moveVelocity.y = self.moveVelocity.y - tensionY * love.physics.getMeter()
   self.moveVelocity.x = self.moveVelocity.x - tensionX * love.physics.getMeter()
@@ -81,7 +81,7 @@ end
 function Player:gravityCleanup()
   local tensionX, tensionY = self.rope:getReactionForce(3/60)
   if math.abs(self.moveVelocity.x) < 8 and lume.round(self.moveVelocity.y * 32) == lume.round(tensionY * 32) then
-    self.moveVelocity.y = 0
+    --self.moveVelocity.y = 0
   end
 end
 
