@@ -8,7 +8,7 @@ function Player:grapplingUpdate(dt)
   self:updateGrapplePosition(currentHookPosition)
   if self:checkGrappleComplete() then
     self.grappleFired = false
-    self.swinging = true
+    self:enterSwingState()
   end
 end
 

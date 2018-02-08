@@ -9,6 +9,7 @@ ImageHandle = Class
 
     --set offset based on anchor mode and image dimensions
     self.offset = Vector(self:determineOffset())
+    self.angularOffset = self.offset:angleTo()
   end
 }
 
@@ -29,14 +30,14 @@ function ImageHandle:setDrawScale(newScale)
   self.offset = Vector(self:determineOffset())
 end
 
-function ImageHandle:draw(position, angle, scale)
-  if debug then
-    love.graphics.setColor(DEBUG_COLOR_IMAGE) --fill debug circle for debug
-    love.graphics.circle("fill", position.x, position.y, 8)
-    love.graphics.setColor(255, 255, 255)
-  end
+function ImageHandle:draw(position, r, scale)
+  local rotatedOffset = self:rotateOnCenter(r)
+  love.graphics.circle("fill", position.x + rotatedOffset.x, position.y + rotatedOffset.y, 4)
+  love.graphics.draw(self.image, position.x + rotatedOffset.x, position.y + rotatedOffset.y, r, scale, scale)
+end
 
-  love.graphics.draw(self.image, position.x + self.offset.x, position.y + self.offset.y, angle, scale, scale)
+function ImageHandle:rotateOnCenter(angle)
+  return self.offset:rotated(angle)
 end
 
 function ImageHandle:clear()

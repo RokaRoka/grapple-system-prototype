@@ -38,42 +38,58 @@ Player = Class{__includes = Object,
       )
     end
 
+    --player general member data
+    self.angle = 0
+
     --player member physics data--
     self.moveVelocity = Vector(0, 0)
     self.grounded = false
     self.jumping = false
     self.airTime = 0
+    self.momentum = 0
 
     --player member grapple data--
     self.grappleTarget = nil
+    self.grappledTo = nil
+    self.grappleFired = false
+    self.grappleFailed = false
+    --draw data
+    self.hookPosition = Vector(0, 0)
+
+    --player member swinging data
+    self.swinging = false
+    self.rope = nil
+    self.lastVelocityX = 0
+    self.influence = 2
+
   end,
   --Physics Data --EVERYTHING in meters
   gravY = 0.5 * love.physics.getMeter(),
 
   --Movement data
   moveAccel = 0.3 * love.physics.getMeter(),
-  moveDecel = 0.55 * love.physics.getMeter(),
-  moveTopSpeed = 12 * love.physics.getMeter(),
+  moveDecel = 0.65 * love.physics.getMeter(),
+  moveTopSpeed = 10 * love.physics.getMeter(),
 
   --Air data
   airAccel = 0.5 * love.physics.getMeter(),
+  airDrag = 0.95, --is multiplied to velocity
 
   --Jump data
-  jumpPower = -5 * love.physics.getMeter(),
-  maxJumpTime = 0.3, --this is in seconds
+  jumpPower = -6 * love.physics.getMeter(),
+  maxJumpTime = 0.35, --this is in seconds
 
   --grappling hook data
-  grappleRange = 96,
-  grappleFired = false,
+  grappleLength = 96,
   grappleCount = 0,
-  grappleFailed = false,
 
   --grapple draw data
   hookColor = {235, 235, 235},
-  hookPosition = Vector(0, 0),
 
   --swinging data
-  swinging = false,
+  swingAccel = 0.2,
+  goingFastSpeed = 10,
+  influenceRefill = 2,
 
   --Vector constants
   VECTOR_RIGHT = Vector(1.0, 0),
@@ -97,6 +113,8 @@ function Player:update(dt)
   if self.physicsHandle then
     if self.grappleFired then
       self:grapplingUpdate(dt)
+    elseif self.swinging then
+      self:swingUpdate()
     end
     self:movement(dt)
   end
@@ -111,7 +129,6 @@ function Player:draw()
 end
 
 function Player:beginContact(fixtureA, fixtureB, contact)
-
   local otherB = fixtureB:getUserData()
   if otherB.name == "Ground" then
     self.debugLog = "Player grounded!"
@@ -174,3 +191,4 @@ end
 
 require("Game/Player/PlayerMovement")
 require("Game/Player/PlayerGrapple")
+require("Game/Player/PlayerSwing")

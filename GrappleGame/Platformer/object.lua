@@ -19,6 +19,8 @@ Object = Class
     table.insert(Object.all, self)
     self.index = #Object.all + 1
 
+    self.angle = 0 --random stuff
+
     --random debug text filler
     self.debugLog = "Empty debug log for "..self.name
 
@@ -59,7 +61,7 @@ end
 
 function Object:draw()
   if self.imageHandle then
-    self.imageHandle:draw(self.pos, self.angle or 0, self.imageHandle.imageScale or 1)
+    self.imageHandle:draw(self.pos, self.angle, self.imageHandle.imageScale or 1)
   end
 
   if self.physicsHandle then

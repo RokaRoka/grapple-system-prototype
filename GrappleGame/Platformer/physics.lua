@@ -11,6 +11,7 @@ PhysicsHandle = Class
     end
 
     self.body = love.physics.newBody(world, parent.pos.x + self.offset.x, parent.pos.y + self.offset.y, bodyType)
+    self.body:setFixedRotation(true) -- set fixed rotation cuz we dont want real physics
 
     if shape == "rectangle" then
       self.shape = love.physics.newRectangleShape(wr, h)

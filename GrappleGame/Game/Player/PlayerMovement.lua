@@ -6,15 +6,19 @@ function Player:movement(dt)
   --x velocity math
   --if holding a direction, accelerate
   if self.inputDirectionHeld.x > 0 or self.inputDirectionHeld.x < 0 then
-    self:accelerate()
+    if not self.swinging then
+      self:accelerate()
+    else
+      --swing influence
+      self:influenceSwingSpeed()
+    end
   elseif self.moveVelocity.x < 0 or self.moveVelocity.x > 0 then
-    --decelerate since input is not held and the player is moving
+    --decelerate since input is not held
     self:decelerate()
   end
 
   --y velocity math
-  --if not grounded, apply gravity
-  if not self.grounded then --if in the air
+  if not self.grounded then
     --apply additional grav to velocity y
     self:applyGravity()
   end
@@ -27,8 +31,14 @@ function Player:movement(dt)
       self.jumping = false
     end
   end
+
   --update movement
+  self.lastVelocityX = self.moveVelocity.x
   self:updateVelocity()
+end
+
+function Player:getMomentum()
+  self.momentum = self.moveVelocity:len()
 end
 
 --updates moveVelocity
@@ -47,11 +57,14 @@ end
 function Player:decelerate()
   --get the direction of movement first
   local sign = lume.sign(self.moveVelocity.x)
-
-  if sign > 0 then
-    self.moveVelocity.x = lume.clamp(self.moveVelocity.x - self.moveDecel, 0, self.moveTopSpeed)
-  else
-    self.moveVelocity.x = lume.clamp(self.moveVelocity.x + self.moveDecel, self.moveTopSpeed *-1 , 0)
+  if self.grounded then
+    if sign > 0 then
+      self.moveVelocity.x = lume.clamp(self.moveVelocity.x - self.moveDecel, 0, self.moveTopSpeed)
+    else
+      self.moveVelocity.x = lume.clamp(self.moveVelocity.x + self.moveDecel, self.moveTopSpeed *-1 , 0)
+    end
+  elseif self.moveVelocity.y > -4 or self.swinging then
+    self.moveVelocity.x = self.moveVelocity.x * self.airDrag
   end
 end
 
