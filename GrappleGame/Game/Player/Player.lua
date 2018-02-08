@@ -1,17 +1,10 @@
 -- PLAYER VARIABLES --
 local playerData = {}
---Player mechanic data--
-playerData.inputAngle = 0
-
---swinging data
-playerData.swingSpeed = Vector(0, 0)
-playerData.swingTopSpeed = 10
-
 --set playerData draw data--
 playerData.path = "Game/Images/"
-playerData.filename = "hero.png"
-playerData.width = 32
-playerData.height = 64
+playerData.filename = "moonman.png"
+playerData.width = 320 * 0.10
+playerData.height = 640 * 0.15
 
 -- PLAYER CLASS --
 Player = Class{__includes = Object,
@@ -22,7 +15,7 @@ Player = Class{__includes = Object,
       playerData.filename,
       ANCHOR_CENTER
     )
-    self.imageHandle:setDrawScale(0.5)
+    self.imageHandle:setDrawScale(0.15)
 
     --Player member vars--
     self.inputDirectionHeld = Vector()
@@ -33,6 +26,13 @@ Player = Class{__includes = Object,
             return "Player Input Vector: "..
               self.inputDirectionHeld.x..", "..
               self.inputDirectionHeld.y
+          end
+        }
+      )
+      debug.addInfo(self.debugPage,
+        {"player-momentum",
+          function()
+            return "Player Momentum: "..self.momentum
           end
         }
       )
@@ -58,9 +58,10 @@ Player = Class{__includes = Object,
 
     --player member swinging data
     self.swinging = false
+    self.swingRight = true
     self.rope = nil
     self.lastVelocityX = 0
-    self.influence = 2
+    self.influence = 10
 
   end,
   --Physics Data --EVERYTHING in meters
@@ -68,7 +69,7 @@ Player = Class{__includes = Object,
 
   --Movement data
   moveAccel = 0.3 * love.physics.getMeter(),
-  moveDecel = 0.65 * love.physics.getMeter(),
+  moveDecel = 0.55 * love.physics.getMeter(),
   moveTopSpeed = 10 * love.physics.getMeter(),
 
   --Air data
@@ -76,20 +77,20 @@ Player = Class{__includes = Object,
   airDrag = 0.95, --is multiplied to velocity
 
   --Jump data
-  jumpPower = -6 * love.physics.getMeter(),
-  maxJumpTime = 0.35, --this is in seconds
+  jumpPower = -6.5 * love.physics.getMeter(),
+  maxJumpTime = 0.4, --this is in seconds
 
   --grappling hook data
-  grappleLength = 96,
+  grappleLength = 128,
   grappleCount = 0,
 
   --grapple draw data
   hookColor = {235, 235, 235},
 
   --swinging data
-  swingAccel = 0.2,
+  swingAccel = 0.5,
   goingFastSpeed = 10,
-  influenceRefill = 2,
+  influenceRefill = 10,
 
   --Vector constants
   VECTOR_RIGHT = Vector(1.0, 0),
@@ -126,6 +127,11 @@ function Player:draw()
     self:grappleDraw()
   end
   Object.draw(self)
+  if debug.myDebug and self.moveVelocity:len2() > 0 then
+    local x1, y1 = self.pos:unpack()
+    local x2, y2 = self.moveVelocity:unpack()
+    love.graphics.line(x1, y1,x1 + x2/32 * 2,y1 + y2/32 * 2)
+  end
 end
 
 function Player:beginContact(fixtureA, fixtureB, contact)

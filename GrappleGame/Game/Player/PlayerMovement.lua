@@ -1,30 +1,33 @@
 function Player:movement(dt)
-  --set the y grav on these jank physics
-  local _
-  _, self.moveVelocity.y = self.physicsHandle.body:getLinearVelocity()
-
   --x velocity math
-  --if holding a direction, accelerate
-  if self.inputDirectionHeld.x > 0 or self.inputDirectionHeld.x < 0 then
-    if not self.swinging then
+  if not self.swinging then --when not swinging
+    --if holding a direction, accelerate
+    if self.inputDirectionHeld.x > 0 or self.inputDirectionHeld.x < 0 then
       self:accelerate()
-    else
-      --swing influence
+    elseif self.moveVelocity.x < 0 or self.moveVelocity.x > 0 then
+        --decelerate since input is not held
+        self:decelerate()
+    end
+  else --when swinging
+    if self.inputDirectionHeld.x > 0 or self.inputDirectionHeld.x < 0 then
       self:influenceSwingSpeed()
     end
-  elseif self.moveVelocity.x < 0 or self.moveVelocity.x > 0 then
-    --decelerate since input is not held
-    self:decelerate()
   end
 
   --y velocity math
   if not self.grounded then
     --apply additional grav to velocity y
     self:applyGravity()
+    if self.swinging then
+      self:ropeTension()
+    end
+  elseif self.grounded then
+    self.moveVelocity.y = 0
   end
 
+  --if jump with space
   if self.jumping then
-    self:applyJump()
+    self:applyJump(dt)
     self.airTime = self.airTime + dt
     if self.airTime > self.maxJumpTime then
       self.airTime = 0
@@ -37,8 +40,8 @@ function Player:movement(dt)
   self:updateVelocity()
 end
 
-function Player:getMomentum()
-  self.momentum = self.moveVelocity:len()
+function Player:updateMomentum()
+  self.momentum = math.floor(self.moveVelocity:len())
 end
 
 --updates moveVelocity
@@ -63,7 +66,7 @@ function Player:decelerate()
     else
       self.moveVelocity.x = lume.clamp(self.moveVelocity.x + self.moveDecel, self.moveTopSpeed *-1 , 0)
     end
-  elseif self.moveVelocity.y > -4 or self.swinging then
+  elseif self.moveVelocity.y > -4 then
     self.moveVelocity.x = self.moveVelocity.x * self.airDrag
   end
 end
@@ -77,6 +80,6 @@ function Player:updateVelocity()
   self.physicsHandle.body:setLinearVelocity(self.moveVelocity:unpack())
 end
 
-function Player:applyJump()
-  self.moveVelocity.y = self.jumpPower
+function Player:applyJump(dt)
+  self.moveVelocity.y = self.jumpPower * (dt * 60)
 end

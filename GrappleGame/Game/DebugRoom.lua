@@ -12,14 +12,14 @@ end
 
 function debugRoom:enter(previous, args) -- called when entering this state from another
   --constant variables
-  DEBUGROOM_PLAYER_POSITION = {x = 128, y = love.graphics.getHeight() -128}
+  DEBUGROOM_PLAYER_POSITION = {x = 128, y = love.graphics.getHeight() - 256}
 
   DEBUGROOM_GROUND1_WIDTH = 512 * 2
   DEBUGROOM_GROUND1_HEIGHT = 64
   DEBUGROOM_GROUND1_POSITION = Vector(DEBUGROOM_GROUND1_WIDTH/2, love.graphics.getHeight() - 32)
 
-  DEBUGROOM_STAR_Y = Vector(0, love.graphics.getHeight() - (DEBUGROOM_GROUND1_HEIGHT * 4))
-  DEBUGROOM_STAR1_POSITION = Vector(256, 0) + DEBUGROOM_STAR_Y
+  DEBUGROOM_STAR_Y = Vector(0, love.graphics.getHeight() - (DEBUGROOM_GROUND1_HEIGHT * 5))
+  DEBUGROOM_STAR1_POSITION = Vector(512 + 256, 0) + DEBUGROOM_STAR_Y
 
   --create physics world
   world = require("Platformer/physicsWorld")

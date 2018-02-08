@@ -21,7 +21,7 @@ GrapplePoint = Class{__includes = Object,
   end,
 
   --trigger size
-  triggerRadius = 96
+  triggerRadius = Player.grappleLength
 }
 
 --extra image to draw for player
